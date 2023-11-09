@@ -16,7 +16,7 @@ import javafx.util.Duration;
 import java.io.IOException;
 
 public class PongGame extends Application {
-    private static final int WIDTH = 8001;
+    private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
     private static final int PADDLE_HEIGHT = 100;
     private static final int PADDLE_WIDTH = 10;
