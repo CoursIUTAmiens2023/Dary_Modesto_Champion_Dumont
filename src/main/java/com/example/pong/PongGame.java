@@ -1,9 +1,16 @@
 package com.example.pong;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -51,6 +58,7 @@ public class PongGame extends Application {
     private int player1Score = 0;
     private int player2Score = 0;
 
+    private Timeline timeline;
     @Override
     public void start(Stage stage) {
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
@@ -106,7 +114,7 @@ public class PongGame extends Application {
         ((Pane) scene.getRoot()).getChildren().addAll(scoreText, centerLine);
 
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(10), e -> {
+         timeline = new Timeline(new KeyFrame(Duration.millis(10), e -> {
             // Mettre à vide l'écran
             gc.setFill(Color.BLACK);
             gc.fillRect(0, 0, WIDTH, HEIGHT);
@@ -176,13 +184,59 @@ public class PongGame extends Application {
             } else if (isDownKeyPressed2 && rightPaddleY < HEIGHT - PADDLE_HEIGHT) {
                 rightPaddleY += 4;
             }
+
+            if (player1Score == 5 || player2Score == 5) {
+                // Arrêter le jeu
+                timeline.stop();
+
+                // Afficher la page de victoire
+                displayWinPage(player1Score == 2 ? "Joueur 1" : "Joueur 2", stage);
+            }
+
         }));
+
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
         stage.setScene(scene);
         stage.setTitle("Pong Game");
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon/iconPong.png")));
         stage.show();
+    }
+
+    private void displayWinPage(String winner, Stage stage) {
+        // Récupérer les dimensions initiales de la scène
+        double width = WIDTH;
+        double height = HEIGHT;
+
+        // Effacer le contenu existant de la scène
+        Pane root = (Pane) stage.getScene().getRoot();
+        root.getChildren().clear();
+
+        // Créer le contenu de la victoire
+        Text winText = new Text(winner + " a gagné!");
+        winText.setFont(Font.font("Monospace", FontWeight.BOLD, 30));
+        winText.setFill(Color.WHITE); // Texte en blanc
+        Button closeButton = new Button("Fermer le jeu");
+        closeButton.setOnAction(event -> Platform.exit());
+
+
+        VBox vbox = new VBox(20);
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+
+
+        vbox.getChildren().addAll(winText, closeButton);
+
+
+        vbox.setMinSize(width, height);
+        vbox.setMaxSize(width, height);
+
+        root.getChildren().add(vbox);
+
+        stage.setWidth(width);
+        stage.setHeight(height);
+        stage.centerOnScreen();
     }
 
     public static void main(String[] args) {
