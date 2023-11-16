@@ -4,6 +4,10 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -27,8 +31,8 @@ public class PongGame extends Application {
     private static final int BALL_RADIUS = 10;
 
     /* Paramètres de la balle */
-    private double ballSpeedX = 1;
-    private double ballSpeedY = 1;
+    private double ballSpeedX = 1.5;
+    private double ballSpeedY = 1.5;
     private double ballX = WIDTH / 2;
     private double ballY = HEIGHT / 2;
 
@@ -45,7 +49,6 @@ public class PongGame extends Application {
     /* Paramètres de score */
     private int player1Score = 0;
     private int player2Score = 0;
-    private Label scoreLabel;
 
     @Override
     public void start(Stage stage) {
@@ -56,35 +59,51 @@ public class PongGame extends Application {
         Scene scene = new Scene(new Pane(canvas), WIDTH, HEIGHT);
         scene.setOnKeyPressed(e -> {
             KeyCode code = e.getCode();
-            if (code == KeyCode.A) {
+            if (code == KeyCode.Z) {
                 isUpKeyPressed1 = true;
-            } else if (code == KeyCode.Z) {
+            } else if (code == KeyCode.S) {
                 isDownKeyPressed1 = true;
-            } else if (code == KeyCode.K) {
+            } else if (code == KeyCode.UP) {
                 isUpKeyPressed2 = true;
-            } else if (code == KeyCode.M) {
+            } else if (code == KeyCode.DOWN) {
                 isDownKeyPressed2 = true;
             }
         });
 
         scene.setOnKeyReleased(e -> {
             KeyCode code = e.getCode();
-            if (code == KeyCode.A) {
+            if (code == KeyCode.Z) {
                 isUpKeyPressed1 = false;
-            } else if (code == KeyCode.Z) {
+            } else if (code == KeyCode.S) {
                 isDownKeyPressed1 = false;
-            } else if (code == KeyCode.K) {
+            } else if (code == KeyCode.UP) {
                 isUpKeyPressed2 = false;
-            } else if (code == KeyCode.M) {
+            } else if (code == KeyCode.DOWN) {
                 isDownKeyPressed2 = false;
             }
         });
 
-        // Création du label de score
-        scoreLabel = new Label("Player 1: 0 - Player 2: 0");
-        scoreLabel.setTextFill(Color.WHITE);
-        scoreLabel.relocate(WIDTH / 2 - 50, 10);
-        ((Pane) scene.getRoot()).getChildren().add(scoreLabel);
+        // Creation Score
+        Text scoreText = new Text("0   0");
+        scoreText.setFont(Font.font("Monospace", FontWeight.BOLD, 70));
+        scoreText.setFill(Color.WHITE);
+        double sceneWidth = scene.getWidth();
+        double textWidth = scoreText.getBoundsInLocal().getWidth();
+        scoreText.setX((sceneWidth - textWidth) / 2);
+        scoreText.setY(HEIGHT /8);
+
+        // Création de la ligne pointillée au centre
+        Line centerLine = new Line();
+        centerLine.setStartX(WIDTH / 2);
+        centerLine.setStartY(0);
+        centerLine.setEndX(WIDTH / 2);
+        centerLine.setEndY(HEIGHT);
+        centerLine.setStroke(Color.WHITE);
+        centerLine.setStrokeWidth(2);
+        centerLine.getStrokeDashArray().addAll(10.0, 5.0);
+
+        ((Pane) scene.getRoot()).getChildren().addAll(scoreText, centerLine);
+
 
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(10), e -> {
             // Mettre à vide l'écran
@@ -106,32 +125,39 @@ public class PongGame extends Application {
             }
 
             if (ballX <= PADDLE_WIDTH && ballY + BALL_RADIUS >= leftPaddleY && ballY <= leftPaddleY + PADDLE_HEIGHT) {
-                ballSpeedX *= -1;
+                ballSpeedX *= -1.25;
             }
 
             if (ballX >= WIDTH - PADDLE_WIDTH - BALL_RADIUS && ballY + BALL_RADIUS >= rightPaddleY && ballY <= rightPaddleY + PADDLE_HEIGHT) {
-                ballSpeedX *= -1;
+                ballSpeedX *= -1.25;
             }
 
             // Vérification du marquage d'un point par un joueur
             if (ballX <= 0) {
                 player2Score++;
-                scoreLabel.setText("Joueur 1: " + player1Score + " - Joueur 2: " + player2Score);
+                scoreText.setText(player1Score + "   " + player2Score);
 
                 // Relancer la balle au centre
                 ballX = WIDTH / 2;
                 ballY = HEIGHT / 2;
-                ballSpeedX = -ballSpeedX;
-                ballSpeedY = -ballSpeedY;
+                if(ballSpeedX>0)
+                    ballSpeedX = -1.5;
+                else
+                    ballSpeedX= 1.5;
+                if(ballSpeedY>0)
+                    ballSpeedY = -1.5;
+                else
+                    ballSpeedY= 1.5;
+
             } else if (ballX >= WIDTH - BALL_RADIUS) {
                 player1Score++;
-                scoreLabel.setText("Joueur 1: " + player1Score + " - Joueur 2: " + player2Score);
+                scoreText.setText(player1Score + "   " + player2Score);
 
                 // Relancer la balle au centre
                 ballX = WIDTH / 2;
                 ballY = HEIGHT / 2;
-                ballSpeedX = -ballSpeedX;
-                ballSpeedY = -ballSpeedY;
+                ballSpeedX = -1.5;
+                ballSpeedY = -1.5;
             }
 
             // Dessiner la balle
@@ -139,15 +165,15 @@ public class PongGame extends Application {
 
             // Mouvement des raquettes
             if (isUpKeyPressed1 && leftPaddleY > 0) {
-                leftPaddleY -= 2;
+                leftPaddleY -= 4;
             } else if (isDownKeyPressed1 && leftPaddleY < HEIGHT - PADDLE_HEIGHT) {
-                leftPaddleY += 2;
+                leftPaddleY += 4;
             }
 
             if (isUpKeyPressed2 && rightPaddleY > 0) {
-                rightPaddleY -= 2;
+                rightPaddleY -= 4;
             } else if (isDownKeyPressed2 && rightPaddleY < HEIGHT - PADDLE_HEIGHT) {
-                rightPaddleY += 2;
+                rightPaddleY += 4;
             }
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
