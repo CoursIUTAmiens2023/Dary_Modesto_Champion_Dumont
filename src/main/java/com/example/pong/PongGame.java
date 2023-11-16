@@ -25,6 +25,7 @@ import java.io.IOException;
 public class PongGame extends Application {
     /* Paramètres des différentes tailles */
     private static final int WIDTH = 800;
+
     private static final int HEIGHT = 600;
     private static final int PADDLE_HEIGHT = 100;
     private static final int PADDLE_WIDTH = 10;
