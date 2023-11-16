@@ -190,7 +190,7 @@ public class PongGame extends Application {
                 timeline.stop();
 
                 // Afficher la page de victoire
-                displayWinPage(player1Score == 2 ? "Joueur 1" : "Joueur 2", stage);
+                displayWinPage(player1Score == 5 ? "Joueur 1" : "Joueur 2", stage);
             }
 
         }));
@@ -205,21 +205,20 @@ public class PongGame extends Application {
     }
 
     private void displayWinPage(String winner, Stage stage) {
-        // Récupérer les dimensions initiales de la scène
         double width = WIDTH;
         double height = HEIGHT;
 
-        // Effacer le contenu existant de la scène
         Pane root = (Pane) stage.getScene().getRoot();
         root.getChildren().clear();
 
-        // Créer le contenu de la victoire
         Text winText = new Text(winner + " a gagné!");
         winText.setFont(Font.font("Monospace", FontWeight.BOLD, 30));
         winText.setFill(Color.WHITE); // Texte en blanc
         Button closeButton = new Button("Fermer le jeu");
         closeButton.setOnAction(event -> Platform.exit());
-
+        closeButton.setStyle("-fx-background-color: #808080; -fx-text-fill: white;");
+        closeButton.setOnMouseEntered(e -> closeButton.setStyle("-fx-background-color: #A9A9A9; -fx-text-fill: white;")); // Gris plus clair pour le survol
+        closeButton.setOnMouseExited(e -> closeButton.setStyle("-fx-background-color: #808080; -fx-text-fill: white;"));
 
         VBox vbox = new VBox(20);
         vbox.setAlignment(Pos.CENTER);
