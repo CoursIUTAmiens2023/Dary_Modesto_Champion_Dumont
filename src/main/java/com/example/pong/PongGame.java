@@ -29,10 +29,14 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 
+/**
+ * Classe principale qui permet de lancer le jeu avec les fenêtres
+ * d'accueil au lancement du programme,
+ * du jeu Pong en lui-même et de victoire.
+ */
 public class PongGame extends Application {
     /* Paramètres des différentes tailles */
     private static final int WIDTH = 800;
-
     private static final int HEIGHT = 600;
     private static final int PADDLE_HEIGHT = 100;
     private static final int PADDLE_WIDTH = 10;
@@ -59,6 +63,12 @@ public class PongGame extends Application {
     private int player2Score = 0;
 
     private Timeline timeline;
+
+    /**
+     * Programme gérant le jeu Pong avec les raquettes, la balle, le timer,
+     * les points marqués, la gestion des collisions, etc ...
+     * @param stage paramètre JavaFx qui affiche les contenus d'une fenêtre
+     */
     @Override
     public void start(Stage stage) {
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
@@ -113,7 +123,7 @@ public class PongGame extends Application {
 
         ((Pane) scene.getRoot()).getChildren().addAll(scoreText, centerLine);
 
-
+        // Gestion du gameplay
          timeline = new Timeline(new KeyFrame(Duration.millis(10), e -> {
             // Mettre à vide l'écran
             gc.setFill(Color.BLACK);
@@ -185,6 +195,7 @@ public class PongGame extends Application {
                 rightPaddleY += 4;
             }
 
+            // Condition de fin de partie
             if (player1Score == 5 || player2Score == 5) {
                 // Arrêter le jeu
                 timeline.stop();
@@ -192,25 +203,32 @@ public class PongGame extends Application {
                 // Afficher la page de victoire
                 displayWinPage(player1Score == 5 ? "Joueur 1" : "Joueur 2", stage);
             }
-
         }));
 
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
+        // Paramètre de la fenêtre
         stage.setScene(scene);
         stage.setTitle("Pong Game");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon/iconPong.png")));
         stage.show();
     }
 
+    /**
+     * Processus qui affiche le gagnant de la partie.
+     * @param winner le nom du gagnant, celui qui atteind 5 points en premier
+     * @param stage paramètre JavaFX pour afficher les contenus d'une fenêtre
+     */
     private void displayWinPage(String winner, Stage stage) {
         double width = WIDTH;
         double height = HEIGHT;
 
+        // Nettoyage de la fenêtre de jeu
         Pane root = (Pane) stage.getScene().getRoot();
         root.getChildren().clear();
 
+        // Contenus de la fenêtre de Victoire
         Text winText = new Text(winner + " a gagné!");
         winText.setFont(Font.font("Monospace", FontWeight.BOLD, 30));
         winText.setFill(Color.WHITE); // Texte en blanc
@@ -220,24 +238,31 @@ public class PongGame extends Application {
         closeButton.setOnMouseEntered(e -> closeButton.setStyle("-fx-background-color: #A9A9A9; -fx-text-fill: white;")); // Gris plus clair pour le survol
         closeButton.setOnMouseExited(e -> closeButton.setStyle("-fx-background-color: #808080; -fx-text-fill: white;"));
 
+        // Création de la scène
         VBox vbox = new VBox(20);
         vbox.setAlignment(Pos.CENTER);
         vbox.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
 
-
+        // Affiche le bouton et le texte
         vbox.getChildren().addAll(winText, closeButton);
 
-
+        // Gérer la taille
         vbox.setMinSize(width, height);
         vbox.setMaxSize(width, height);
 
+        // Conditionne une fenêtre à la bonne taille
         root.getChildren().add(vbox);
 
+        // Afficher la fenêtre avec son contenu
         stage.setWidth(width);
         stage.setHeight(height);
         stage.centerOnScreen();
     }
 
+    /**
+     * Lancement du programme Pong.
+     * @param args paramètre par défaut du main
+     */
     public static void main(String[] args) {
         launch();
     }
