@@ -3,14 +3,14 @@ package com.example.pong;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -20,7 +20,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import javafx.animation.AnimationTimer;
@@ -65,12 +64,58 @@ public class PongGame extends Application {
     private Timeline timeline;
 
     /**
+     *
+     * @param stage
+     */
+    @Override
+    public void start(Stage stage) {
+       stage.setTitle("Pong");
+
+       // Texte pong
+       Text pongText = new Text("Pong");
+       pongText.setFont(Font.font("Monospace", FontWeight.BOLD, 200));
+       pongText.setFill(Color.WHITE);
+
+       // Bouton start (lance la fonction game())
+       Button startButton = new Button("Jouer");
+       startButton.setOnAction(e -> game(stage));
+       startButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;");
+       startButton.setOnMouseEntered(e -> startButton.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
+       startButton.setOnMouseExited(e -> startButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
+
+       // Bouton quitter (litterally arrête le jeu)
+       Button leaveButton = new Button("Quitter");
+       leaveButton.setOnAction(e -> Platform.exit());
+       leaveButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;");
+       leaveButton.setOnMouseEntered(e -> leaveButton.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
+       leaveButton.setOnMouseExited(e -> leaveButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
+
+       // Empilement des trois bazars au dessus dans un layout vertical
+       FlowPane layout = new FlowPane(Orientation.VERTICAL);
+       layout.setAlignment(Pos.CENTER);
+       layout.getChildren().addAll(pongText, startButton, leaveButton);
+       layout.setHgap(15);
+       layout.setVgap(15);
+       layout.setColumnHalignment(HPos.CENTER);
+
+       // Création d'un fond noir
+       BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, null, null);
+       Background background = new Background(backgroundFill);
+       layout.setBackground(background);
+
+       // Affichage
+       Scene scene = new Scene(layout, WIDTH, HEIGHT);
+       stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon/iconPong.png")));
+       stage.setScene(scene);
+       stage.show();
+    }
+
+    /**
      * Programme gérant le jeu Pong avec les raquettes, la balle, le timer,
      * les points marqués, la gestion des collisions, etc ...
      * @param stage paramètre JavaFx qui affiche les contenus d'une fenêtre
      */
-    @Override
-    public void start(Stage stage) {
+    public void game(Stage stage) {
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -197,7 +242,7 @@ public class PongGame extends Application {
 
             // Condition de fin de partie
             if (player1Score == 5 || player2Score == 5) {
-                // Arrêter le jeu
+                // Stopper le jeu
                 timeline.stop();
 
                 // Afficher la page de victoire
@@ -210,8 +255,8 @@ public class PongGame extends Application {
 
         // Paramètre de la fenêtre
         stage.setScene(scene);
-        stage.setTitle("Pong Game");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon/iconPong.png")));
+        // stage.setTitle("Pong Game");
+        // stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon/iconPong.png")));
         stage.show();
     }
 
@@ -230,13 +275,13 @@ public class PongGame extends Application {
 
         // Contenus de la fenêtre de Victoire
         Text winText = new Text(winner + " a gagné!");
-        winText.setFont(Font.font("Monospace", FontWeight.BOLD, 30));
+        winText.setFont(Font.font("Monospace", FontWeight.BOLD, 75));
         winText.setFill(Color.WHITE); // Texte en blanc
-        Button closeButton = new Button("Fermer le jeu");
-        closeButton.setOnAction(event -> Platform.exit());
-        closeButton.setStyle("-fx-background-color: #808080; -fx-text-fill: white;");
-        closeButton.setOnMouseEntered(e -> closeButton.setStyle("-fx-background-color: #A9A9A9; -fx-text-fill: white;")); // Gris plus clair pour le survol
-        closeButton.setOnMouseExited(e -> closeButton.setStyle("-fx-background-color: #808080; -fx-text-fill: white;"));
+        Button closeButton = new Button("Retourner à l'accueil");
+        closeButton.setOnAction(event -> start(stage));
+        closeButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;");
+        closeButton.setOnMouseEntered(e -> closeButton.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;")); // Gris plus clair pour le survol
+        closeButton.setOnMouseExited(e -> closeButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
 
         // Création de la scène
         VBox vbox = new VBox(20);
