@@ -2,6 +2,8 @@ package com.example.pong;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
@@ -90,7 +92,7 @@ public class PongGame extends Application {
        leaveButton.setOnMouseEntered(e -> leaveButton.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
        leaveButton.setOnMouseExited(e -> leaveButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
 
-       // Empilement des trois bazars au dessus dans un layout vertical
+       // Empilement des trois bazars au-dessus dans un layout vertical
        FlowPane layout = new FlowPane(Orientation.VERTICAL);
        layout.setAlignment(Pos.CENTER);
        layout.getChildren().addAll(pongText, startButton, leaveButton);
@@ -120,7 +122,8 @@ public class PongGame extends Application {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         // Les contrôles des raquettes (2 Joueurs)
-        Scene scene = new Scene(new Pane(canvas), WIDTH, HEIGHT);
+        StackPane layout = new StackPane(canvas);
+        Scene scene = new Scene(layout, WIDTH, HEIGHT);
         scene.setOnKeyPressed(e -> {
             KeyCode code = e.getCode();
             if (code == KeyCode.Z) {
@@ -151,10 +154,10 @@ public class PongGame extends Application {
         Text scoreText = new Text("0   0");
         scoreText.setFont(Font.font("Monospace", FontWeight.BOLD, 70));
         scoreText.setFill(Color.WHITE);
-        double sceneWidth = scene.getWidth();
-        double textWidth = scoreText.getBoundsInLocal().getWidth();
-        scoreText.setX((sceneWidth - textWidth) / 2);
-        scoreText.setY(HEIGHT /8);
+
+        // Affichage du score par rapport à la taille de fenêtre
+        DoubleBinding scoreTextYBinding = Bindings.when(stage.fullScreenProperty()).then(HEIGHT / -5.0).otherwise(HEIGHT / -3.0);
+        scoreText.translateYProperty().bind(scoreTextYBinding);
 
         // Création de la ligne pointillée au centre
         Line centerLine = new Line();
@@ -166,7 +169,7 @@ public class PongGame extends Application {
         centerLine.setStrokeWidth(2);
         centerLine.getStrokeDashArray().addAll(10.0, 5.0);
 
-        ((Pane) scene.getRoot()).getChildren().addAll(scoreText, centerLine);
+        layout.getChildren().addAll(scoreText, centerLine);
 
         // Gestion du gameplay
          timeline = new Timeline(new KeyFrame(Duration.millis(10), e -> {
