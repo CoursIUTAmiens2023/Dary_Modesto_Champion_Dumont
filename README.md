@@ -1,10 +1,10 @@
 # Dary_Modesto_Champion_Dumont - PONG
 
 ## Auteurs
-Tony Dary - Dev voice actor
-Lucas Dumont - Dev du menu et sound designer
-Nathan Modesto - Dev voice actor
-Théo Champion - Documentation, tests, qualité de code
+- Tony Dary - Dev voice actor
+- Lucas Dumont - Dev du menu et sound designer
+- Nathan Modesto - Dev voice actor
+- Théo Champion - Documentation, tests, qualité de code
 
 Jeu Pong fait en Java
 
