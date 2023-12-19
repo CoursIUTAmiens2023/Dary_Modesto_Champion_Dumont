@@ -1,10 +1,9 @@
-package com.example.pong;
+package Pong;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -14,11 +13,9 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -26,11 +23,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import javafx.animation.AnimationTimer;
-import javafx.scene.control.Label;
-import javafx.util.Duration;
 
-import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Classe principale qui permet de lancer le jeu avec les fenêtres
@@ -39,11 +33,11 @@ import java.io.IOException;
  */
 public class PongGame extends Application {
     /* Paramètres des différentes tailles */
-    private static final int WIDTH = 850;
-    private static final int HEIGHT = 650;
-    private static final int PADDLE_HEIGHT = 100;
-    private static final int PADDLE_WIDTH = 10;
-    private static final int BALL_RADIUS = 10;
+    private static final double WIDTH = 850;
+    private static final double HEIGHT = 650;
+    private static final double PADDLE_HEIGHT = 100;
+    private static final double PADDLE_WIDTH = 10;
+    private static final double BALL_RADIUS = 10;
 
     /* Paramètres de la balle */
     private double ballSpeedX = 1.5;
@@ -69,9 +63,21 @@ public class PongGame extends Application {
 
     private Timeline timeline;
 
+    /* Paramètres de style */
+    private final String buttonStyle = "-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;";
+    private final String buttonHoveredStyle = "-fx-background-color: white; -fx-text-fill: black; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;";
+
+    public Button stylisedButton(String text) {
+        Button button = new Button(text);
+        button.setStyle(buttonStyle);
+        button.setOnMouseEntered(e -> button.setStyle(buttonHoveredStyle));
+        button.setOnMouseExited(e -> button.setStyle(buttonStyle));
+        return button;
+    }
+
     /**
-     *
-     * @param stage
+     * Fonction de jeu
+     * @param stage Le stage du jeu
      */
     @Override
     public void start(Stage stage) {
@@ -83,18 +89,12 @@ public class PongGame extends Application {
        pongText.setFill(Color.WHITE);
 
        // Bouton start (lance la fonction game())
-       Button startButton = new Button("Jouer");
+       Button startButton = stylisedButton("Jouer");
        startButton.setOnAction(e -> {resetGame(); game(stage);});
-       startButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;");
-       startButton.setOnMouseEntered(e -> startButton.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
-       startButton.setOnMouseExited(e -> startButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
 
        // Bouton quitter (litterally arrête le jeu)
-       Button leaveButton = new Button("Quitter");
+       Button leaveButton = stylisedButton("Quitter");
        leaveButton.setOnAction(e -> Platform.exit());
-       leaveButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;");
-       leaveButton.setOnMouseEntered(e -> leaveButton.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
-       leaveButton.setOnMouseExited(e -> leaveButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
 
        // Empilement des trois bazars au-dessus dans un layout vertical
        FlowPane layout = new FlowPane(Orientation.VERTICAL);
@@ -111,7 +111,11 @@ public class PongGame extends Application {
 
        // Affichage
        Scene scene = new Scene(layout, WIDTH, HEIGHT);
-       stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon/iconPong.png")));
+       try {
+           stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/iconPong.png"))));
+       } catch (Exception e) {
+           System.out.println("Icon missing\n" + e);
+       }
        stage.setScene(scene);
        stage.setWidth(WIDTH);
        stage.setHeight(HEIGHT);
@@ -151,33 +155,7 @@ public class PongGame extends Application {
 
         // Les contrôles des raquettes (2 Joueurs)
         StackPane layout = new StackPane(canvas);
-        Scene scene = new Scene(layout, WIDTH, HEIGHT);
-
-        scene.setOnKeyPressed(e -> {
-            KeyCode code = e.getCode();
-            if (code == KeyCode.Z) {
-                isUpKeyPressed1 = true;
-            } else if (code == KeyCode.S) {
-                isDownKeyPressed1 = true;
-            } else if (code == KeyCode.UP) {
-                isUpKeyPressed2 = true;
-            } else if (code == KeyCode.DOWN) {
-                isDownKeyPressed2 = true;
-            }
-        });
-
-        scene.setOnKeyReleased(e -> {
-            KeyCode code = e.getCode();
-            if (code == KeyCode.Z) {
-                isUpKeyPressed1 = false;
-            } else if (code == KeyCode.S) {
-                isDownKeyPressed1 = false;
-            } else if (code == KeyCode.UP) {
-                isUpKeyPressed2 = false;
-            } else if (code == KeyCode.DOWN) {
-                isDownKeyPressed2 = false;
-            }
-        });
+        Scene scene = getScene(layout);
 
         // Création d'un fond noir
         BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, null, null);
@@ -273,15 +251,15 @@ public class PongGame extends Application {
 
             // Mouvement des raquettes
             if (isUpKeyPressed1 && leftPaddleY > 0) {
-                leftPaddleY -= 4;
+                leftPaddleY -= speedPaddle;
             } else if (isDownKeyPressed1 && leftPaddleY < HEIGHT - PADDLE_HEIGHT) {
-                leftPaddleY += 4;
+                leftPaddleY += speedPaddle;
             }
 
             if (isUpKeyPressed2 && rightPaddleY > 0) {
-                rightPaddleY -= 4;
+                rightPaddleY -= speedPaddle;
             } else if (isDownKeyPressed2 && rightPaddleY < HEIGHT - PADDLE_HEIGHT) {
-                rightPaddleY += 4;
+                rightPaddleY += speedPaddle;
             }
 
             // Condition de fin de partie
@@ -291,9 +269,6 @@ public class PongGame extends Application {
 
                 stage.setWidth(WIDTH);
                 stage.setHeight(HEIGHT);
-
-                System.out.println(stage.getWidth());
-                System.out.println(stage.getHeight());
 
                 // Afficher la page de victoire
                 displayWinPage(player1Score == 5 ? "Joueur 1" : "Joueur 2", stage);
@@ -307,10 +282,39 @@ public class PongGame extends Application {
         stage.setScene(scene);
         stage.setWidth(WIDTH + 50);
         stage.setHeight(HEIGHT + 50);
-        System.out.println(stage.getWidth());
-        System.out.println(stage.getHeight());
 
         stage.show();
+    }
+
+    private Scene getScene(StackPane layout) {
+        Scene scene = new Scene(layout, WIDTH, HEIGHT);
+
+        scene.setOnKeyPressed(e -> {
+            KeyCode code = e.getCode();
+            if (code == KeyCode.Z) {
+                isUpKeyPressed1 = true;
+            } else if (code == KeyCode.S) {
+                isDownKeyPressed1 = true;
+            } else if (code == KeyCode.UP) {
+                isUpKeyPressed2 = true;
+            } else if (code == KeyCode.DOWN) {
+                isDownKeyPressed2 = true;
+            }
+        });
+
+        scene.setOnKeyReleased(e -> {
+            KeyCode code = e.getCode();
+            if (code == KeyCode.Z) {
+                isUpKeyPressed1 = false;
+            } else if (code == KeyCode.S) {
+                isDownKeyPressed1 = false;
+            } else if (code == KeyCode.UP) {
+                isUpKeyPressed2 = false;
+            } else if (code == KeyCode.DOWN) {
+                isDownKeyPressed2 = false;
+            }
+        });
+        return scene;
     }
 
     /**
@@ -331,11 +335,8 @@ public class PongGame extends Application {
         winText.setFont(Font.font("Monospace", FontWeight.BOLD, 75));
         winText.setFill(Color.WHITE); // Texte en blanc
 
-        Button closeButton = new Button("Retourner à l'accueil");
+        Button closeButton = stylisedButton("Retourner à l'accueil");
         closeButton.setOnAction(event -> start(stage));
-        closeButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;");
-        closeButton.setOnMouseEntered(e -> closeButton.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;")); // Gris plus clair pour le survol
-        closeButton.setOnMouseExited(e -> closeButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
 
         // Création de la scène
         VBox vbox = new VBox(20);
