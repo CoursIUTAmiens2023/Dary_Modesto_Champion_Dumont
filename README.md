@@ -8,7 +8,7 @@ Théo Champion - Documentation, tests, qualité de code
 
 Jeu Pong fait en Java
 
-Doc utilisateur disponible (ici)[doc_utilisateur.md]
+Doc utilisateur disponible [ici](https://github.com/CoursIUTAmiens2023/Dary_Modesto_Champion_Dumont/blob/main/doc_utilisateur.md)
 
 ## Stack
 * Java
