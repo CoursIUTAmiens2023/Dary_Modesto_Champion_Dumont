@@ -14,9 +14,11 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -37,8 +39,8 @@ import java.io.IOException;
  */
 public class PongGame extends Application {
     /* Paramètres des différentes tailles */
-    private static final int WIDTH = 800;
-    private static final int HEIGHT = 600;
+    private static final int WIDTH = 850;
+    private static final int HEIGHT = 650;
     private static final int PADDLE_HEIGHT = 100;
     private static final int PADDLE_WIDTH = 10;
     private static final int BALL_RADIUS = 10;
@@ -46,6 +48,8 @@ public class PongGame extends Application {
     /* Paramètres de la balle */
     private double ballSpeedX = 1.5;
     private double ballSpeedY = 1.5;
+
+    private double speedPaddle = 4;
     private double ballX = WIDTH / 2;
     private double ballY = HEIGHT / 2;
 
@@ -80,7 +84,7 @@ public class PongGame extends Application {
 
        // Bouton start (lance la fonction game())
        Button startButton = new Button("Jouer");
-       startButton.setOnAction(e -> game(stage));
+       startButton.setOnAction(e -> {resetGame(); game(stage);});
        startButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;");
        startButton.setOnMouseEntered(e -> startButton.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
        startButton.setOnMouseExited(e -> startButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;"));
@@ -109,7 +113,31 @@ public class PongGame extends Application {
        Scene scene = new Scene(layout, WIDTH, HEIGHT);
        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon/iconPong.png")));
        stage.setScene(scene);
+       stage.setWidth(WIDTH);
+       stage.setHeight(HEIGHT);
        stage.show();
+    }
+
+    /**
+     * Remet les paramètres de jeu à 0.
+     */
+    private void resetGame() {
+        // Réinitialisez toutes les variables de jeu ici
+        ballSpeedX = 1.5;
+        ballSpeedY = 1.5;
+        ballX = WIDTH / 2;
+        ballY = HEIGHT / 2;
+
+        leftPaddleY = HEIGHT / 2 - PADDLE_HEIGHT / 2;
+        rightPaddleY = HEIGHT / 2 - PADDLE_HEIGHT / 2;
+
+        isUpKeyPressed1 = false;
+        isDownKeyPressed1 = false;
+        isUpKeyPressed2 = false;
+        isDownKeyPressed2 = false;
+
+        player1Score = 0;
+        player2Score = 0;
     }
 
     /**
@@ -124,6 +152,7 @@ public class PongGame extends Application {
         // Les contrôles des raquettes (2 Joueurs)
         StackPane layout = new StackPane(canvas);
         Scene scene = new Scene(layout, WIDTH, HEIGHT);
+
         scene.setOnKeyPressed(e -> {
             KeyCode code = e.getCode();
             if (code == KeyCode.Z) {
@@ -149,6 +178,11 @@ public class PongGame extends Application {
                 isDownKeyPressed2 = false;
             }
         });
+
+        // Création d'un fond noir
+        BackgroundFill backgroundFill = new BackgroundFill(Color.BLACK, null, null);
+        Background background = new Background(backgroundFill);
+        layout.setBackground(background);
 
         // Creation Score
         Text scoreText = new Text("0   0");
@@ -177,6 +211,10 @@ public class PongGame extends Application {
             gc.setFill(Color.BLACK);
             gc.fillRect(0, 0, WIDTH, HEIGHT);
 
+            // Dessiner un contour blanc autour du rectangle noir
+            gc.setStroke(Color.WHITE);
+            gc.strokeRect(0, 0, WIDTH, HEIGHT);
+
             // Dessiner les raquettes
             gc.setFill(Color.WHITE);
             gc.fillRect(0, leftPaddleY, PADDLE_WIDTH, PADDLE_HEIGHT);
@@ -193,10 +231,12 @@ public class PongGame extends Application {
 
             if (ballX <= PADDLE_WIDTH && ballY + BALL_RADIUS >= leftPaddleY && ballY <= leftPaddleY + PADDLE_HEIGHT) {
                 ballSpeedX *= -1.25;
+                speedPaddle *= 1.15;
             }
 
             if (ballX >= WIDTH - PADDLE_WIDTH - BALL_RADIUS && ballY + BALL_RADIUS >= rightPaddleY && ballY <= rightPaddleY + PADDLE_HEIGHT) {
                 ballSpeedX *= -1.25;
+                speedPaddle *= 1.15;
             }
 
             // Vérification du marquage d'un point par un joueur
@@ -221,6 +261,7 @@ public class PongGame extends Application {
                 scoreText.setText(player1Score + "   " + player2Score);
 
                 // Relancer la balle au centre
+                speedPaddle = 4;
                 ballX = WIDTH / 2;
                 ballY = HEIGHT / 2;
                 ballSpeedX = -1.5;
@@ -248,6 +289,12 @@ public class PongGame extends Application {
                 // Stopper le jeu
                 timeline.stop();
 
+                stage.setWidth(WIDTH);
+                stage.setHeight(HEIGHT);
+
+                System.out.println(stage.getWidth());
+                System.out.println(stage.getHeight());
+
                 // Afficher la page de victoire
                 displayWinPage(player1Score == 5 ? "Joueur 1" : "Joueur 2", stage);
             }
@@ -258,8 +305,11 @@ public class PongGame extends Application {
 
         // Paramètre de la fenêtre
         stage.setScene(scene);
-        // stage.setTitle("Pong Game");
-        // stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon/iconPong.png")));
+        stage.setWidth(WIDTH + 50);
+        stage.setHeight(HEIGHT + 50);
+        System.out.println(stage.getWidth());
+        System.out.println(stage.getHeight());
+
         stage.show();
     }
 
@@ -269,8 +319,8 @@ public class PongGame extends Application {
      * @param stage paramètre JavaFX pour afficher les contenus d'une fenêtre
      */
     private void displayWinPage(String winner, Stage stage) {
-        double width = WIDTH;
-        double height = HEIGHT;
+        double width = WIDTH + 50;
+        double height = HEIGHT + 50;
 
         // Nettoyage de la fenêtre de jeu
         Pane root = (Pane) stage.getScene().getRoot();
@@ -280,6 +330,7 @@ public class PongGame extends Application {
         Text winText = new Text(winner + " a gagné!");
         winText.setFont(Font.font("Monospace", FontWeight.BOLD, 75));
         winText.setFill(Color.WHITE); // Texte en blanc
+
         Button closeButton = new Button("Retourner à l'accueil");
         closeButton.setOnAction(event -> start(stage));
         closeButton.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;");
@@ -302,14 +353,14 @@ public class PongGame extends Application {
         root.getChildren().add(vbox);
 
         // Afficher la fenêtre avec son contenu
-        stage.setWidth(width);
-        stage.setHeight(height);
+        stage.setWidth(width - 50);
+        stage.setHeight(height - 50);
         stage.centerOnScreen();
     }
 
     /**
      * Lancement du programme Pong.
-     * @param args paramètre par défaut du main
+     * @param args paramètre par défaut du Main
      */
     public static void main(String[] args) {
         launch();
