@@ -67,6 +67,11 @@ public class PongGame extends Application {
     private final String buttonStyle = "-fx-background-color: black; -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;";
     private final String buttonHoveredStyle = "-fx-background-color: white; -fx-text-fill: black; -fx-border-color: white; -fx-border-width: 10px; -fx-border-radius: 0px; -fx-background-radius: 0px; -fx-font-family: 'Monospace'; -fx-font-size: 50; -fx-font-weight: bold;";
 
+    /**
+     * Générateur de bouton avec son message qui indique l'action du bouton
+     * @param text texte afficher dans le bouton
+     * @return button dans les menus
+     */
     public Button stylisedButton(String text) {
         Button button = new Button(text);
         button.setStyle(buttonStyle);
