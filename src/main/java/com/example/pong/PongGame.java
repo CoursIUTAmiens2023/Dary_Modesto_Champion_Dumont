@@ -1,4 +1,4 @@
-package Pong;
+package com.example.pong;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -29,7 +29,7 @@ import java.util.Objects;
 /**
  * Classe principale qui permet de lancer le jeu avec les fenêtres
  * d'accueil au lancement du programme,
- * du jeu Pong en lui-même et de victoire.
+ * du jeu com.example.Pong en lui-même et de victoire.
  */
 public class PongGame extends Application {
     /* Paramètres des différentes tailles */
@@ -151,7 +151,7 @@ public class PongGame extends Application {
     }
 
     /**
-     * Programme gérant le jeu Pong avec les raquettes, la balle, le timer,
+     * Programme gérant le jeu com.example.Pong avec les raquettes, la balle, le timer,
      * les points marqués, la gestion des collisions, etc ...
      * @param p_stage paramètre JavaFx qui affiche les contenus d'une fenêtre
      */
@@ -367,7 +367,7 @@ public class PongGame extends Application {
     }
 
     /**
-     * Lancement du programme Pong.
+     * Lancement du programme com.example.Pong.
      * @param args paramètre par défaut du Main
      */
     public static void main(String[] args) {

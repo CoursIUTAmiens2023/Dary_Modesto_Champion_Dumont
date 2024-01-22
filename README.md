@@ -6,7 +6,7 @@
 - Nathan Modesto - Dev voice actor
 - Théo Champion - Documentation, tests, qualité de code
 
-Jeu Pong fait en Java
+Jeu com.example.pong fait en Java
 
 Doc utilisateur disponible [ici](https://github.com/CoursIUTAmiens2023/Dary_Modesto_Champion_Dumont/blob/main/doc_utilisateur.md)
 
@@ -26,7 +26,7 @@ Je tiens également à préciser que Nathan "Le furtif" Modesto n'a pas spécial
 
 ## Grandes étapes du développement
 
-1. Choix du jeu à réaliser parmi une liste (Tic-Tac-Toe, Pacman, Pong...)
+1. Choix du jeu à réaliser parmi une liste (Tic-Tac-Toe, Pacman, com.example.pong...)
 2. Choix du langage
 3. Choix de la technologie d'affichage
 4. Développement du jeu

@@ -7,7 +7,7 @@
     <groupId>Pong</groupId>
     <artifactId>Pong</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Pong</name>
+    <name>com.example.pong</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

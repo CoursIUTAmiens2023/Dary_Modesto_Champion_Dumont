@@ -3,6 +3,6 @@ module Pong {
     requires javafx.fxml;
 
 
-    opens Pong to javafx.fxml;
-    exports Pong;
+    opens com.example.pong to javafx.fxml;
+    exports com.example.pong;
 }
